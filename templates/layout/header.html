@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-3 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <span class="brand-logo fw-bold fs-4">TeachEng</span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbar"
+            aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                {% if session.get('user_id') %}
+                <li class="nav-item d-flex align-items-center">
+                    <span class="fw-semibold me-3 text-success">
+                        Chào {{ session.get('user_name') }}
+                    </span>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.profile_page') }}">Tài khoản</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="btn btn-outline-light btn-sm ms-2" href="{{ url_for('user.logout') }}">Đăng xuất</a>
+                </li>
+
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('user.login_page') }}">Đăng nhập</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="btn btn-primary btn-sm px-3" href="{{ url_for('user.register_page') }}">Đăng ký ngay</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
