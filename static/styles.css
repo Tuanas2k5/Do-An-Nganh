@@ -54,7 +54,7 @@
     .btn-xem-them:hover {
         opacity: 0.85;
         color: white;
-
+    }
 /*==============Trang Login*=============*/
     .login-card {
         background: white;
@@ -122,4 +122,16 @@
 
     .login-link:hover {
         text-decoration: underline;
+    }
+
+/*==============Trang Làm Reading=============*/
+    .scroll-box {
+        overflow-y: auto;
+        height: 40vh;
+    }
+
+    @media (min-width: 992px) {
+        .scroll-box {
+            height: 75vh;
+        }
     }

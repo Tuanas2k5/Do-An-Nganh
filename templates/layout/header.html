@@ -10,29 +10,61 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbar">
-            <ul class="navbar-nav ms-auto align-items-center gap-2">
-                {% if session.get('user_id') %}
-                <li class="nav-item d-flex align-items-center">
-                    <span class="fw-semibold me-3 text-success">
-                        Chào {{ session.get('user_name') }}
+            <ul class="navbar-nav ms-auto align-items-center gap-3">
+
+                {# Sử dụng biến current_user của Flask-Login để kiểm tra trạng thái #}
+                {% if current_user.is_authenticated %}
+
+
+                <li class="nav-item">
+                    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm" style="cursor: help;" title="Số tim còn lại để làm bài">
+                        <i class="fas fa-heart me-1"></i> {{ current_user.hearts_count }}
                     </span>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('user.profile_page') }}">Tài khoản</a>
-                </li>
 
+                {% if current_user.is_premium %}
                 <li class="nav-item">
-                    <a class="btn btn-outline-light btn-sm ms-2" href="{{ url_for('user.logout') }}">Đăng xuất</a>
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2 fs-6 shadow-sm">
+                        <i class="fas fa-crown me-1"></i> PRO
+                    </span>
+                </li>
+                {% endif %}
+
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle fs-4 me-2 text-primary"></i>
+                        <span class="fw-semibold">Chào, {{ current_user.last_name }}</span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item py-2" href="{{ url_for('user.profile_page') }}">
+                                <i class="fas fa-id-card me-2 text-muted"></i>Trang cá nhân
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="#">
+                                <i class="fas fa-chart-line me-2 text-muted"></i>Tiến độ học tập
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item py-2 text-danger fw-medium" href="{{ url_for('user.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('user.login_page') }}">Đăng nhập</a>
+                    <a class="nav-link fw-medium" href="{{ url_for('user.login_page') }}">Đăng nhập</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="btn btn-primary btn-sm px-3" href="{{ url_for('user.register_page') }}">Đăng ký ngay</a>
+                    <a class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-bold transition-hover" href="{{ url_for('user.register_page') }}">Đăng ký ngay</a>
                 </li>
                 {% endif %}
             </ul>

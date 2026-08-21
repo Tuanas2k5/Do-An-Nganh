@@ -1,0 +1,70 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container-fluid px-4 my-4">
+    <div class="row h-100">
+
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-primary text-white p-3 rounded-top-4 d-flex align-items-center">
+                    <i class="fas fa-pen-nib fs-4 me-2"></i>
+                    <h5 class="mb-0 fw-bold">Đề bài Writing</h5>
+                    <span class="badge bg-light text-primary ms-auto">Level {{ exercise.level }}</span>
+                </div>
+                
+                <div class="card-body bg-light">
+                    <h5 class="fw-bold text-dark mb-3">{{ exercise.title }}</h5>
+                    
+                    <div class="fs-6 p-3 bg-white border rounded-3 shadow-sm mb-4" style="line-height: 1.8; white-space: pre-wrap;">{{ exercise.description }}</div>
+                    
+                    <div class="alert alert-info border-0 shadow-sm rounded-3">
+                        <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>Yêu cầu:</h6>
+                        <ul class="mb-0">
+                            <!-- Thay 150 bằng biến Jinja -->
+                            <li>Số từ tối thiểu: <strong id="min-words" class="text-danger">{{ exercise.min_words }}</strong> từ.</li>
+                            <li>Tập trung vào ngữ pháp và tính mạch lạc.</li>
+                            <li>AI sẽ trừ 1 Tim nếu bài viết dưới điểm chuẩn.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-dark text-white p-3 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-keyboard me-2"></i>Khu vực làm bài</h5>
+
+                    <!-- Thêm data-min-words vào đây và đổi số hiển thị -->
+                    <div class="badge bg-secondary fs-6 px-3 py-2 shadow-sm" id="word-count-badge" data-min-words="{{ exercise.min_words }}">
+                        <i class="fas fa-font me-1"></i> <span id="word-count">0</span> / {{ exercise.min_words }} từ
+                    </div>
+                </div>
+                
+                <div class="card-body p-0">
+                    <form id="writing-form" action="#" method="POST" class="h-100 d-flex flex-column">
+
+                        <textarea class="form-control border-0 p-4 fs-5 flex-grow-1" 
+                                  id="student_essay" 
+                                  name="student_essay" 
+                                  placeholder="Bắt đầu viết bài của bạn tại đây..." 
+                                  style="min-height: 60vh; resize: none; box-shadow: none;" 
+                                  required></textarea>
+
+                        <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                            <span class="text-muted small" id="validation-msg">Vui lòng viết đủ số từ yêu cầu.</span>
+                            <button type="submit" class="btn btn-success btn-lg px-5 fw-bold rounded-pill shadow-sm" id="btn-submit" disabled>
+                                Nộp bài <i class="fas fa-paper-plane ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/word_count.js') }}"></script>
+
+{% endblock %}

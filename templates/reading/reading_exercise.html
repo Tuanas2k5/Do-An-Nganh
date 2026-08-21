@@ -1,0 +1,86 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<!-- Dùng container-fluid để tận dụng tối đa chiều rộng màn hình cho layout chia đôi -->
+<div class="container-fluid px-4 my-4">
+    <div class="row h-100">
+
+        <!-- Cột Trái: Đoạn văn Reading -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-primary text-white p-3 rounded-top-4 d-flex align-items-center">
+                    <i class="fas fa-book-reader fs-4 me-2"></i>
+                    <h5 class="mb-0 fw-bold">{{ exercise.title }}</h5>
+                    <span class="badge bg-light text-primary ms-auto">Level {{ exercise.level }}</span>
+                </div>
+
+                <!-- Áp dụng class scroll-box thay vì style cứng -->
+                <div class="card-body scroll-box" style="background-color: #f8f9fa;">
+                    <div class="fs-5" style="line-height: 1.8; text-align: justify;">
+                        {{ exercise.content | replace('\n\n', '<br><br>') | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột Phải: Danh sách Câu hỏi trắc nghiệm -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-success text-white p-3 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-tasks me-2"></i>Câu hỏi trắc nghiệm</h5>
+
+                    <div class="badge bg-danger fs-6 px-3 py-2 shadow-sm" id="timer-container" data-time="{{ exercise.time_limit }}">
+                        <i class="fas fa-clock me-1"></i> <span id="time-display">--:--</span>
+                    </div>
+                </div>
+
+                <!-- Áp dụng class scroll-box -->
+                <div class="card-body bg-light scroll-box">
+                    <form id="quiz-form" action="#" method="POST">
+
+                        {% for question in exercise.questions %}
+                        <div class="card border-0 shadow-sm mb-4 rounded-3">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3 lh-base">
+                                    <span class="badge bg-primary me-2">Câu {{ loop.index }}</span>
+                                    {{ question.question_text }}
+                                </h6>
+
+                                <div class="options-group ps-3">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_A" value="A" required>
+                                        <label class="form-check-label" for="q_{{ question.id }}_A">A. {{ question.option_a }}</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_B" value="B" required>
+                                        <label class="form-check-label" for="q_{{ question.id }}_B">B. {{ question.option_b }}</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_C" value="C" required>
+                                        <label class="form-check-label" for="q_{{ question.id }}_C">C. {{ question.option_c }}</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_D" value="D" required>
+                                        <label class="form-check-label" for="q_{{ question.id }}_D">D. {{ question.option_d }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="text-center mt-4 mb-3">
+                            <button type="submit" class="btn btn-success btn-lg px-5 fw-bold rounded-pill shadow-sm transition-hover">
+                                Hoàn thành bài <i class="fas fa-check-circle ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/countdown.js') }}"></script>
+
+{% endblock %}

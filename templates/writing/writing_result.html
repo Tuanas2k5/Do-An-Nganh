@@ -1,0 +1,107 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <i class="fas fa-check-circle display-4 mb-3"></i>
+                    <h2 class="fw-bold">Đã Chấm Điểm Xong!</h2>
+                    <p class="mb-0 fs-5">{{ topic.title }}</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <div class="row mb-5">
+                        <!-- Cột Trái: Thông số & Biểu đồ -->
+                        <div class="col-md-5 mb-4 mb-md-0 d-flex flex-column align-items-center">
+                            <div class="text-center mb-4 w-100">
+                                <div class="p-3 border rounded-4 bg-light shadow-sm">
+                                    <h6 class="text-muted text-uppercase fw-bold mb-2">Điểm Tổng (Overall)</h6>
+                                    <h1 class="text-success fw-bold mb-0 display-4">{{ submission.total_score }}</h1>
+                                </div>
+                            </div>
+
+                            <!-- Khung chứa Biểu đồ Radar -->
+                            <div class="w-100" style="max-width: 300px;">
+                                <canvas id="scoreRadarChart"
+                                        data-grammar="{{ submission.grammar_score or 0 }}"
+                                        data-vocabulary="{{ submission.vocabulary_score or 0 }}"
+                                        data-coherence="{{ submission.coherence_score or 0 }}"
+                                        data-task="{{ submission.task_response_score or 0 }}">
+                                </canvas>
+                            </div>
+
+                            <div class="w-100 px-3">
+                                <div class="row g-2 text-center">
+                                    <div class="col-6">
+                                        <div class="p-2 border rounded-3 bg-light shadow-sm hover-card">
+                                            <small class="text-muted fw-bold d-block mb-1">Ngữ Pháp</small>
+                                            <span class="fs-5 fw-bold text-primary">{{ submission.grammar_score or 0 }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-2 border rounded-3 bg-light shadow-sm hover-card">
+                                            <small class="text-muted fw-bold d-block mb-1">Từ Vựng</small>
+                                            <span class="fs-5 fw-bold text-primary">{{ submission.vocabulary_score or 0 }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-2 border rounded-3 bg-light shadow-sm hover-card">
+                                            <small class="text-muted fw-bold d-block mb-1">Mạch Lạc</small>
+                                            <span class="fs-5 fw-bold text-primary">{{ submission.coherence_score or 0 }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-2 border rounded-3 bg-light shadow-sm hover-card">
+                                            <small class="text-muted fw-bold d-block mb-1">Đáp Ứng Đề</small>
+                                            <span class="fs-5 fw-bold text-primary">{{ submission.task_response_score or 0 }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cột Phải: Lời phê của AI -->
+                        <div class="col-md-7">
+                            <h4 class="fw-bold text-primary border-bottom pb-2 mb-3">
+                                <i class="fas fa-robot me-2"></i>Nhận Xét Từ Giám Khảo AI
+                            </h4>
+
+                            <div id="ai-feedback-box" class="fs-6 text-dark" style="line-height: 1.8;"
+                                 data-feedback="{{ submission.ai_feedback | e }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted mb-4">
+
+                    <!-- Bài viết của học sinh -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-file-alt me-2"></i>Bài viết của bạn:
+                        </h5>
+                        <div class="p-4 bg-light border rounded-3 text-dark"
+                             style="white-space: pre-wrap; line-height: 1.8;">{{ submission.content_submitted }}
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('index') }}"
+                           class="btn btn-primary btn-lg px-5 rounded-pill fw-bold shadow-sm">
+                            <i class="fas fa-home me-2"></i>Về Trang Chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="{{ url_for('static', filename='js/writing_explanation.js') }}"></script>
+
+{% endblock %}
