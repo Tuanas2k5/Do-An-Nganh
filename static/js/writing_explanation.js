@@ -2,11 +2,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const feedbackBox = document.getElementById('ai-feedback-box');
 
     if (feedbackBox) {
-        const rawFeedback = feedbackBox.getAttribute('data-feedback');
+        let rawFeedback = feedbackBox.getAttribute('data-feedback');
+
         if (rawFeedback && rawFeedback.trim() !== "") {
+            rawFeedback = rawFeedback.replace(/&lt;/g, "<")
+                                     .replace(/&gt;/g, ">")
+                                     .replace(/&quot;/g, "\"")
+                                     .replace(/&#39;/g, "'")
+                                     .replace(/&amp;/g, "&");
+
             feedbackBox.innerHTML = marked.parse(rawFeedback);
         } else {
-            feedbackBox.innerHTML = "<p class='text-muted'>Chưa có nhận xét chi tiết từ hệ thống.</p>";
+            feedbackBox.innerHTML = "<p class='text-muted'><i class='fas fa-info-circle me-1'></i>Chưa có nhận xét chi tiết từ hệ thống.</p>";
         }
     }
 
@@ -43,7 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 plugins: {
                     legend: { display: false }
-                }
+                },
+                maintainAspectRatio: false
             }
         });
     }

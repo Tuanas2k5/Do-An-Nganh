@@ -1,0 +1,55 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-warning text-dark p-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-pen me-2"></i>Sửa Đề Writing (Version {{ writing.version }})</h4>
+                    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-sm btn-dark fw-bold">Trở về</a>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form action="{{ url_for('teacher.edit_writing', writing_id=writing.id) }}" method="POST">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tiêu đề</label>
+                            <input type="text" class="form-control form-control-lg" name="title" value="{{ writing.title }}" required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cấp độ</label>
+                                <select class="form-select form-select-lg" name="level" required>
+                                    <option value="A1" {% if writing.level == 'A1' %}selected{% endif %}>A1</option>
+                                    <option value="A2" {% if writing.level == 'A2' %}selected{% endif %}>A2</option>
+                                    <option value="B1" {% if writing.level == 'B1' %}selected{% endif %}>B1</option>
+                                    <option value="B2" {% if writing.level == 'B2' %}selected{% endif %}>B2</option>
+                                    <option value="C1" {% if writing.level == 'C1' %}selected{% endif %}>C1</option>
+                                    <option value="C2" {% if writing.level == 'C2' %}selected{% endif %}>C2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Từ tối thiểu</label>
+                                <input type="number" class="form-control form-control-lg" name="min_words" value="{{ writing.min_words }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Từ tối đa</label>
+                                <input type="number" class="form-control form-control-lg" name="max_words" value="{{ writing.max_words }}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mô tả & Yêu cầu</label>
+                            <textarea class="form-control" name="description" rows="6" required>{{ writing.description }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 btn-lg fw-bold rounded-pill text-dark">
+                            <i class="fas fa-save me-2"></i>Cập Nhật Đề Thi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

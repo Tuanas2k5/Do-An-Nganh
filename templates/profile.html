@@ -1,0 +1,178 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<!-- Căn lề padding-top (pt-5) để không bị menu fixed-top che mất -->
+<div class="container my-5 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0"><i class="fas fa-id-card text-primary me-2"></i>Hồ Sơ Cá Nhân</h3>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary fw-bold rounded-pill">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- CỘT TRÁI: THÔNG TIN CÁ NHÂN -->
+        <div class="col-lg-5 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 p-md-5 text-center">
+
+                    <!-- Avatar tượng trưng -->
+                    <!-- Avatar có chức năng tải ảnh -->
+                    <div class="mb-4 position-relative d-inline-block">
+
+                        <!-- Ảnh đại diện -->
+                        <img src="{{ current_user.avatar if current_user.avatar else url_for('static', filename='img/default_avatar.png') }}"
+                             alt="Avatar"
+                             class="rounded-circle object-fit-cover border border-3 border-primary shadow-sm bg-white"
+                             style="width: 150px; height: 150px;">
+
+                        <!-- Thẻ Badge Premium -->
+                        {% if current_user.is_premium %}
+                        <span class="position-absolute bottom-0 start-100 translate-middle badge rounded-pill bg-warning text-dark p-2 border border-2 border-white shadow-sm"
+                              style="margin-left: -15px; margin-bottom: 15px;">
+            <i class="fas fa-crown"></i> PRO
+        </span>
+                        {% endif %}
+
+                        <!-- Cụm nút thao tác (Tải ảnh mới / Gỡ ảnh cũ) -->
+                        <div class="position-absolute bottom-0 start-50 translate-middle-x d-flex gap-2"
+                             style="margin-bottom: -20px;">
+
+                            <!-- Nút 1: Đổi ảnh (Camera) -->
+                            <form action="{{ url_for('user.upload_avatar') }}" method="POST"
+                                  enctype="multipart/form-data">
+                                <label for="avatarInput"
+                                       class="btn btn-primary btn-sm rounded-circle shadow border border-2 border-white d-flex align-items-center justify-content-center"
+                                       style="width: 38px; height: 38px; cursor: pointer;" title="Đổi ảnh đại diện">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input type="file" id="avatarInput" name="avatar" class="d-none"
+                                       accept="image/png, image/jpeg, image/jpg" onchange="this.form.submit()">
+                            </form>
+
+                            <!-- Nút 2: Gỡ ảnh (Thùng rác) - Chỉ hiện khi đã có link ảnh Cloudinary trong DB -->
+                            {% if current_user.avatar %}
+                            <form action="{{ url_for('user.remove_avatar') }}" method="POST">
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm rounded-circle shadow border border-2 border-white d-flex align-items-center justify-content-center"
+                                        style="width: 38px; height: 38px;" title="Gỡ ảnh đại diện"
+                                        onclick="return confirm('Bạn có chắc muốn gỡ ảnh đại diện này không?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    <!-- Thông tin cơ bản -->
+                    <h3 class="fw-bold text-dark">{{ current_user.last_name }} {{ current_user.first_name }}</h3>
+                    <p class="text-muted mb-4 fs-5">{{ current_user.email }}</p>
+
+                    <hr class="text-muted opacity-25">
+
+                    <!-- Chỉ số học tập -->
+                    <div class="row text-center mt-4">
+                        <div class="col-4 border-end">
+                            <h6 class="text-muted mb-2 fw-bold text-uppercase" style="font-size: 0.8rem;">Cấp độ</h6>
+                            <h3 class="fw-bold text-primary mb-0">{{ current_user.current_level }}</h3>
+                        </div>
+                        <div class="col-4 border-end">
+                            <h6 class="text-muted mb-2 fw-bold text-uppercase" style="font-size: 0.8rem;">Tiến độ</h6>
+                            <h3 class="fw-bold text-success mb-0">{{ current_user.progress_points }}<span class="fs-6">PP</span>
+                            </h3>
+                        </div>
+                        <div class="col-4">
+                            <h6 class="text-muted mb-2 fw-bold text-uppercase" style="font-size: 0.8rem;">Năng
+                                lượng</h6>
+                            {% if current_user.is_premium %}
+                            <h3 class="fw-bold text-danger mb-0"><i class="fas fa-infinity"></i></h3>
+                            {% else %}
+                            <h3 class="fw-bold text-danger mb-0">{{ current_user.hearts_count }} <i
+                                    class="fas fa-heart fs-5"></i></h3>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: QUẢN LÝ GÓI CƯỚC (PREMIUM) -->
+        <div class="col-lg-7 mb-4">
+
+            {% if current_user.is_premium %}
+            <!-- TRẠNG THÁI ĐÃ NÂNG CẤP (VIP CARD) -->
+            <div class="card border-0 shadow-lg rounded-4 h-100 bg-dark text-white"
+                 style="position: relative; overflow: hidden;">
+                <!-- Hiệu ứng nền ánh sáng vàng -->
+                <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,193,7,0.15) 0%, transparent 70%);"></div>
+
+                <div class="card-body p-5 position-relative z-1 d-flex flex-column justify-content-center">
+                    <div class="text-center mb-5">
+                        <i class="fas fa-crown text-warning mb-3" style="font-size: 4rem;"></i>
+                        <h2 class="fw-bold text-warning tracking-wide">GÓI PREMIUM ĐANG HOẠT ĐỘNG</h2>
+                        <p class="fs-5 text-white-50">Cảm ơn bạn đã đồng hành cùng LearnEng!</p>
+                    </div>
+
+                    <div class="bg-black bg-opacity-25 p-4 rounded-4">
+                        <ul class="list-unstyled fs-5 text-start mx-auto mb-0">
+                            <li class="mb-3"><i class="fas fa-check-circle text-warning me-3"></i> Không giới hạn Năng
+                                lượng (Tim)
+                            </li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-warning me-3"></i> Mở khóa toàn bộ bài
+                                học & cấp độ
+                            </li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-warning me-3"></i> Giải thích AI chuyên
+                                sâu không giới hạn
+                            </li>
+                            <li class="mb-0"><i class="fas fa-check-circle text-warning me-3"></i> Ôn tập lỗi sai tự
+                                động (Mistake Review)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- TRẠNG THÁI FREE: BẢNG GIÁ NÂNG CẤP -->
+            <div class="card border-0 shadow-lg rounded-4 h-100 border-top border-warning border-5">
+                <div class="card-body p-4 p-md-5 d-flex flex-column">
+                    <div class="text-center mb-4">
+                        <h6 class="text-uppercase text-muted fw-bold mb-2">Nâng cấp tài khoản</h6>
+                        <h2 class="fw-bold mb-3">Gói <span class="text-warning"><i
+                                class="fas fa-crown"></i> PREMIUM</span></h2>
+                        <h1 class="display-4 fw-bold text-dark mb-2">49.000<span class="fs-4 text-muted fw-normal">đ / 30 ngày</span>
+                        </h1>
+                        <p class="text-muted">Đầu tư nhỏ, bứt phá ngoại ngữ to!</p>
+                    </div>
+
+                    <div class="bg-light p-4 rounded-4 mb-5 flex-grow-1">
+                        <ul class="list-unstyled text-start mx-auto mb-0" style="max-width: 400px;">
+                            <li class="mb-3 fs-5"><i class="fas fa-check-circle text-success me-3"></i>Làm bài thoải mái
+                                với <strong>Vô hạn Tim</strong></li>
+                            <li class="mb-3 fs-5"><i class="fas fa-check-circle text-success me-3"></i>Mở khóa tự do từ
+                                <strong>A1 đến C2</strong></li>
+                            <li class="mb-3 fs-5"><i class="fas fa-check-circle text-success me-3"></i>Gỡ rối đáp án
+                                cùng <strong>Trợ giảng AI</strong></li>
+                            <li class="mb-0 fs-5"><i class="fas fa-check-circle text-success me-3"></i>Luyện tập lại
+                                <strong>Lỗi sai thông minh</strong></li>
+                        </ul>
+                    </div>
+
+                    <!-- Form chuyển hướng sang thanh toán VNPay -->
+                    <form action="{{ url_for('user.upgrade_premium') }}" method="POST">
+                        <button type="submit"
+                                class="btn btn-warning btn-lg w-100 rounded-pill fw-bold fs-5 shadow-sm py-3 text-dark transition-hover"
+                                onclick="this.innerHTML='<i class=\'fas fa-spinner fa-spin me-2\'></i> Đang kết nối VNPay...';">
+                            <i class="fas fa-credit-card me-2"></i> THANH TOÁN QUA VNPAY
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-warning text-dark p-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-pen me-2"></i>Sửa Thông Tin Bài Đọc</h4>
+                    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-sm btn-dark fw-bold">Trở về</a>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form action="{{ url_for('teacher.edit_reading', exercise_id=exercise.id) }}" method="POST">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tiêu đề bài tập</label>
+                            <input type="text" class="form-control form-control-lg" name="title" value="{{ exercise.title }}" required>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Cấp độ</label>
+                                <select class="form-select form-select-lg" name="level" required>
+                                    <option value="A1" {% if exercise.level == 'A1' %}selected{% endif %}>A1</option>
+                                    <option value="A2" {% if exercise.level == 'A2' %}selected{% endif %}>A2</option>
+                                    <option value="B1" {% if exercise.level == 'B1' %}selected{% endif %}>B1</option>
+                                    <option value="B2" {% if exercise.level == 'B2' %}selected{% endif %}>B2</option>
+                                    <option value="C1" {% if exercise.level == 'C1' %}selected{% endif %}>C1</option>
+                                    <option value="C2" {% if exercise.level == 'C2' %}selected{% endif %}>C2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3 mt-md-0">
+                                <label class="form-label fw-bold">Thời gian (Phút)</label>
+                                <input type="number" class="form-control form-control-lg" name="time_limit" min="5" max="60" value="{{ exercise.time_limit }}" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Nội dung đoạn văn</label>
+                            <textarea class="form-control" name="content" rows="12" required>{{ exercise.content }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 btn-lg fw-bold rounded-pill text-dark">
+                            <i class="fas fa-save me-2"></i>Cập Nhật Bài Đọc
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

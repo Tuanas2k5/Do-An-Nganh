@@ -1,0 +1,118 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container-fluid px-4 my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-dark text-white rounded-4 shadow-sm">
+        <h3 class="mb-0 fw-bold"><i class="fas fa-graduation-cap me-2 text-warning"></i>Bài Thi Thăng Cấp: {{
+            current_user.current_level }}</h3>
+        <div class="badge bg-danger fs-5 px-4 py-2" id="timer-container">
+            <i class="fas fa-clock me-2"></i><span id="time-display">60:00</span>
+        </div>
+    </div>
+
+    <form id="level-up-form" action="{{ url_for('exams.level_up_exam') }}" method="POST">
+        <div class="row">
+
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-header bg-primary text-white p-3 rounded-top-4">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-book-reader me-2"></i>Phần 1: Reading (50%)</h5>
+                    </div>
+                    <div class="card-body bg-light scroll-box" style="max-height: 70vh; overflow-y: auto;">
+
+                        {% set question_counter = namespace(value=1) %}
+
+                        {% for exercise_id, qs in reading_qs | groupby('exercise_id') %}
+                        {% set exercise = qs[0].exercise %}
+                        <div class="mb-4 position-relative">
+                            <div class="p-3 bg-white border rounded-3 shadow-sm mb-4 sticky-passage">
+                                <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">
+                                    <i class="fas fa-file-alt me-2"></i>Đọc đoạn văn sau và trả lời câu hỏi:
+                                </h6>
+                                <div class="text-dark passage-content">
+                                    {{ exercise.content | replace('\n\n', '<br><br>') | safe }}
+                                </div>
+                            </div>
+
+                            {% for q in qs %}
+                            <div class="card border-0 shadow-sm mb-4 rounded-3 ms-2 border-start border-primary border-4">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3 lh-base">
+                                        <span class="badge bg-primary me-2">Câu {{ question_counter.value }}</span>
+                                        {{ q.question_text }}
+                                    </h6>
+                                    <div class="options-group ps-3">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="q_{{ q.id }}"
+                                                   id="q_{{ q.id }}_A" value="A" required>
+                                            <label class="form-check-label" for="q_{{ q.id }}_A">A. {{ q.option_a
+                                                }}</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="q_{{ q.id }}"
+                                                   id="q_{{ q.id }}_B" value="B" required>
+                                            <label class="form-check-label" for="q_{{ q.id }}_B">B. {{ q.option_b
+                                                }}</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="q_{{ q.id }}"
+                                                   id="q_{{ q.id }}_C" value="C" required>
+                                            <label class="form-check-label" for="q_{{ q.id }}_C">C. {{ q.option_c
+                                                }}</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="q_{{ q.id }}"
+                                                   id="q_{{ q.id }}_D" value="D" required>
+                                            <label class="form-check-label" for="q_{{ q.id }}_D">D. {{ q.option_d
+                                                }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% set question_counter.value = question_counter.value + 1 %}
+                            {% endfor %}
+
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-header bg-success text-white p-3 rounded-top-4">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-pen-nib me-2"></i>Phần 2: Writing (50%)</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-dark">{{ writing_topic.title }}</h5>
+                            <p class="text-muted" style="white-space: pre-wrap;">{{ writing_topic.description }}</p>
+                            <span class="badge bg-warning text-dark"><i class="fas fa-align-left me-1"></i>{{ writing_topic.min_words }} - {{ writing_topic.max_words }} words</span>
+                        </div>
+
+                        <div class="flex-grow-1 d-flex flex-column">
+                            <textarea class="form-control flex-grow-1" name="student_essay" id="essay-box" rows="15"
+                                      placeholder="Bắt đầu viết bài luận của bạn tại đây..." required></textarea>
+                            <div class="text-end mt-2 text-muted small">
+                                Số từ hiện tại: <span id="word-count" class="fw-bold text-primary">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center mb-5">
+            <button type="submit" class="btn btn-warning btn-lg px-5 fw-bold rounded-pill shadow-lg text-dark">
+                NỘP BÀI <i class="fas fa-paper-plane ms-2"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/countdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/word_count.js') }}"></script>
+
+{% endblock %}

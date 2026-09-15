@@ -1,0 +1,62 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <div class="card-header text-white text-center py-5 {% if is_passed %}bg-success{% else %}bg-danger{% endif %}">
+                    {% if is_passed %}
+                    <div class="display-1 mb-3"><i class="fas fa-trophy"></i></div>
+                    <h2 class="fw-bold">XUẤT SẮC! BẠN ĐÃ THĂNG CẤP</h2>
+                    <p class="fs-5 mb-0">Cấp độ mới của bạn là: <strong>{{ current_user.current_level }}</strong></p>
+                    {% else %}
+                    <div class="display-1 mb-3"><i class="fas fa-times-circle"></i></div>
+                    <h2 class="fw-bold">RẤT TIẾC! BẠN CHƯA ĐẠT YÊU CẦU</h2>
+                    <p class="fs-5 mb-0">Cần tối thiểu 70/100 điểm để thăng cấp</p>
+                    {% endif %}
+                </div>
+
+                <div class="card-body p-5 bg-white text-center">
+                    <h1 class="display-3 fw-bold {% if is_passed %}text-success{% else %}text-danger{% endif %}">{{
+                        final_score }} <span class="fs-4 text-muted">/ 100</span></h1>
+
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <h6 class="text-muted fw-bold">Điểm Reading (50%)</h6>
+                                <h4 class="text-primary mb-0">{{ reading_score }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 border rounded-3 bg-light">
+                                <h6 class="text-muted fw-bold">Điểm Writing (50%)</h6>
+                                <h4 class="text-success mb-0">{{ writing_score }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="alert {% if is_passed %}alert-success{% else %}alert-warning{% endif %} fw-bold">
+                        {% if is_passed %}
+                        <i class="fas fa-star me-2"></i> Hệ thống đã khôi phục Điểm tiến độ (PP) của bạn về 0. Hãy bắt
+                        đầu hành trình mới nhé!
+                        {% else %}
+                        <i class="fas fa-exclamation-triangle me-2"></i> Bạn bị trừ {{ penalty }} PP. Hãy ôn luyện và
+                        tích luỹ lại PP để mở khóa lần thi sau!
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{{ url_for('index') }}"
+                           class="btn btn-dark btn-lg px-5 rounded-pill fw-bold shadow-sm">
+                            <i class="fas fa-home me-2"></i> Về trang chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-warning text-dark p-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-pen me-2"></i>Sửa Câu Hỏi</h4>
+                    <a href="{{ url_for('teacher.manage_reading_questions', exercise_id=exercise.id) }}" class="btn btn-sm btn-dark fw-bold">Hủy</a>
+                </div>
+                <div class="card-body p-4">
+                    <form action="{{ url_for('teacher.edit_reading_question', exercise_id=exercise.id, question_id=question.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nội dung câu hỏi</label>
+                            <textarea class="form-control" name="content" rows="3" required>{{ question.question_text }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Các đáp án</label>
+                            <div class="input-group mb-2"><span class="input-group-text fw-bold">A</span><input type="text" class="form-control" name="option_a" value="{{ question.option_a }}" required></div>
+                            <div class="input-group mb-2"><span class="input-group-text fw-bold">B</span><input type="text" class="form-control" name="option_b" value="{{ question.option_b }}" required></div>
+                            <div class="input-group mb-2"><span class="input-group-text fw-bold">C</span><input type="text" class="form-control" name="option_c" value="{{ question.option_c }}" required></div>
+                            <div class="input-group mb-2"><span class="input-group-text fw-bold">D</span><input type="text" class="form-control" name="option_d" value="{{ question.option_d }}" required></div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-success">Đáp án đúng</label>
+                            <select class="form-select border-success" name="correct_answer" required>
+                                <option value="A" {% if question.correct_answer == 'A' %}selected{% endif %}>Đáp án A</option>
+                                <option value="B" {% if question.correct_answer == 'B' %}selected{% endif %}>Đáp án B</option>
+                                <option value="C" {% if question.correct_answer == 'C' %}selected{% endif %}>Đáp án C</option>
+                                <option value="D" {% if question.correct_answer == 'D' %}selected{% endif %}>Đáp án D</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">
+                            <i class="fas fa-save me-2"></i>Lưu Thay Đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

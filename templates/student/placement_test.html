@@ -4,8 +4,7 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            
-            <!-- Khối thông tin giới thiệu -->
+
             <div class="card shadow-sm border-0 rounded-4 mb-4">
                 <div class="card-body p-4 text-center">
                     <h2 class="fw-bold text-primary mb-3">Bài Kiểm Tra Trình Độ Đầu Vào</h2>
@@ -16,7 +15,6 @@
                 </div>
             </div>
 
-            <!-- Form câu hỏi -->
             <form method="POST" action="{{ url_for('exams.placement_test_page') }}">
                 
                 {% for question in questions %}
@@ -28,28 +26,27 @@
                         </h5>
                         
                         <div class="options-group ps-3">
-                            <!-- Đáp án A -->
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_A" value="A" required>
                                 <label class="form-check-label" for="q_{{ question.id }}_A">
                                     A. {{ question.option_a }}
                                 </label>
                             </div>
-                            <!-- Đáp án B -->
+
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_B" value="B" required>
                                 <label class="form-check-label" for="q_{{ question.id }}_B">
                                     B. {{ question.option_b }}
                                 </label>
                             </div>
-                            <!-- Đáp án C -->
+
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_C" value="C" required>
                                 <label class="form-check-label" for="q_{{ question.id }}_C">
                                     C. {{ question.option_c }}
                                 </label>
                             </div>
-                            <!-- Đáp án D -->
+
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="q_{{ question.id }}_D" value="D" required>
                                 <label class="form-check-label" for="q_{{ question.id }}_D">
@@ -61,16 +58,13 @@
                 </div>
                 {% endfor %}
 
-                <!-- Thanh công cụ (Nút Nộp bài & Nút Bỏ qua) -->
                 <div class="card shadow-sm border-0 rounded-4 sticky-bottom mb-5" style="bottom: 20px; z-index: 1000;">
                     <div class="card-body p-3 d-flex justify-content-between align-items-center bg-light rounded-4 border">
                         
-                        <!-- Nút Bỏ qua có value="skip" và formnovalidate để lướt qua lệnh bắt buộc chọn đáp án -->
                         <button type="submit" name="action" value="skip" class="btn btn-outline-secondary fw-semibold px-4" formnovalidate>
                             <i class="fas fa-forward me-2"></i>Bỏ qua & Bắt đầu từ A1
                         </button>
                         
-                        <!-- Nút Nộp bài có value="submit" -->
                         <button type="submit" name="action" value="submit" class="btn btn-primary fw-bold px-5">
                             Nộp Bài <i class="fas fa-paper-plane ms-2"></i>
                         </button>

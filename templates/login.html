@@ -1,57 +1,58 @@
 {% extends 'layout/base.html' %}
 {% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold"><i class="fas fa-sign-in-alt text-primary me-2"></i>Đăng Nhập</h3>
+                    <p class="text-muted">Truy cập vào LearnEng - Hệ thống hỗ trợ tự học tiếng Anh</p>
+                </div>
 
-<div class="container d-flex justify-content-center align-items-center mb-5" style="min-height: calc(100vh - 200px);">
-
-    <div class="card shadow-lg border-0 rounded-4 w-100" style="max-width: 450px;">
-
-        <div class="card-header bg-primary text-white text-center py-4 rounded-top-4 border-0">
-            <h3 class="fw-bold mb-1">Đăng Nhập</h3>
-            <p class="mb-0 small text-white-50">Hệ Thống Hỗ Trợ Tự Học Tiếng Anh</p>
-        </div>
-
-        <div class="card-body p-4 p-md-5">
-            <form action="{{ url_for('user.login_page') }}" method="post">
-                {# {{ login_user_form.hidden_tag() }} #}
-
-                <div class="mb-3">
-                    <label for="username" class="form-label fw-semibold text-secondary small mb-1">Tên đăng nhập / Email</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0" id="username" name="email" placeholder="Nhập tài khoản" required/>
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="fas fa-envelope text-muted"></i></span>
+                            <input type="email" id="email" class="form-control bg-light border-start-0" required
+                                   placeholder="Nhập email của bạn">
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-4">
-                    <label for="password" class="form-label fw-semibold text-secondary small mb-1">Mật khẩu</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
-                        <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="Nhập mật khẩu" required/>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Mật khẩu</label>
+                        <!-- Input Group chứa nút hiện mật khẩu -->
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                            <input type="password" id="password"
+                                   class="form-control bg-light border-start-0 border-end-0" required
+                                   placeholder="Nhập mật khẩu">
+                            <button class="btn btn-light border border-start-0" type="button" id="togglePassword"
+                                    tabindex="-1">
+                                <i class="fas fa-eye text-muted" id="eyeIcon"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember" name="remember"/>
-                        <label class="form-check-label text-secondary small" for="remember">
-                            Ghi nhớ tôi
-                        </label>
-                    </div>
-                    <a href="#" class="text-decoration-none small text-primary fw-medium">Quên mật khẩu?</a>
-                </div>
+                    <!-- Khung hiển thị thông báo lỗi từ API -->
+                    <div id="errorMessage" class="alert alert-danger d-none py-2 text-center fw-medium"></div>
 
-                <button type="submit" class="btn btn-primary w-100 py-2 mb-4 fw-bold rounded-pill transition-hover">
-                    Đăng Nhập
-                </button>
-
-                <div class="text-center">
-                    <p class="text-secondary small mb-0">
-                        Chưa có tài khoản? <a href="#" class="text-decoration-none fw-bold text-primary">Đăng ký ngay</a>
-                    </p>
+                    <button type="submit" id="submitBtn"
+                            class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">
+                        <i class="fas fa-arrow-right me-2"></i>ĐĂNG NHẬP
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <p class="mb-0 text-muted">Chưa có tài khoản? <a href="{{url_for('user.register_page')}}"
+                                                                     class="text-primary fw-bold text-decoration-none">Đăng
+                        ký ngay</a></p>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
 {% endblock %}

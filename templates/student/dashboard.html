@@ -1,0 +1,275 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+{% set next_level_map = {'A1': 'A2', 'A2': 'B1', 'B1': 'B2', 'B2': 'C1', 'C1': 'C2'} %}
+{% if current_user.current_level == 'C2' %}
+    {% set pp_percent = 100 %}
+{% else %}
+    {% set pp_percent = ((current_user.progress_points / (pp_threshold | int)) * 100) | round(1) %}
+{% endif %}
+<div class="dashboard-wrapper">
+
+    <aside class="dash-sidebar">
+
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar-box">
+                <img src="{{ current_user.avatar if current_user.avatar else url_for('static', filename='img/default_avatar.png') }}"
+                    alt="Avatar" class="sidebar-avatar-img">
+                {% if current_user.is_premium %}
+                <span
+                    class="position-absolute bottom-0 start-100 translate-middle badge rounded-pill bg-warning text-dark p-1 border border-2 border-white shadow-sm"
+                    style="margin-left: -12px; margin-bottom: 6px;" title="Gói Premium PRO">
+                    <i class="fas fa-crown"></i> PRO
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="sidebar-name">
+                {% if current_user.last_name or current_user.first_name %}
+                {{ current_user.last_name }} {{ current_user.first_name }}
+                {% else %}
+                {{ current_user.username }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="level-box">
+            <div class="level-icon-wrap">
+                <i class="fas fa-medal text-warning"></i>
+            </div>
+            <div>
+                <small class="text-muted d-block text-uppercase fw-bold"
+                    style="font-size: 0.68rem; letter-spacing: 0.5px;">Cấp độ hiện tại</small>
+                <div class="d-flex align-items-baseline gap-2">
+                    <span class="fs-4 fw-bold text-primary">{{ current_user.current_level }}</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1"
+                        style="font-size: 0.7rem;">CEFR Standard</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-muted fw-semibold" style="font-size: 0.8rem;">
+                    <i class="fas fa-star text-warning me-1"></i> Điểm tiến độ
+                </span>
+                <span class="fw-bold text-primary" style="font-size: 0.9rem;">
+                    {{ current_user.progress_points }} / {{ pp_threshold }} <span class="fs-7 text-muted">PP</span>
+                </span>
+            </div>
+            <div class="sidebar-pp-bar">
+                <div class="sidebar-pp-bar-fill" style="width: {{ [pp_percent, 100] | min }}%"></div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-1">
+                <small class="text-muted" style="font-size: 0.7rem;">Tiến trình lên cấp</small>
+                <small class="fw-bold text-dark" style="font-size: 0.72rem;">{{ pp_percent }}%</small>
+            </div>
+        </div>
+
+        <div class="sidebar-stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted fw-semibold" style="font-size: 0.8rem;">
+                    <i class="fas fa-heart text-danger me-1"></i> Năng lượng
+                </span>
+                <span class="fw-bold fs-6">
+                    {% if current_user.is_premium %}
+                    <span class="text-success"><i class="fas fa-infinity text-warning me-1"></i> Vô hạn</span>
+                    {% else %}
+                    <span class="text-danger">{{ current_user.hearts_count }}</span> <span
+                        class="text-muted fs-7">Tim</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        {% if current_user.current_level == 'C2' %}
+        <div class="levelup-action-box">
+            <button class="btn-levelup disabled-btn" disabled>
+                <i class="fas fa-crown text-warning me-1"></i> ĐÃ ĐẠT ĐỈNH CAO
+            </button>
+            <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
+                Chúc mừng bạn đã hoàn thành mốc C2 cao nhất! 🎉
+            </small>
+        </div>
+
+        {% elif current_user.progress_points >= pp_threshold %}
+        <div class="levelup-action-box ready">
+            <a href="{{ url_for('exams.level_up_exam') }}" class="btn-levelup active-pulse">
+                <i class="fas fa-play-circle me-1"></i> THI THĂNG CẤP {{ next_level_map.get(current_user.current_level,
+                '') }}
+            </a>
+            <small class="d-block mt-2 fw-bold" style="font-size: 0.75rem;">
+                {% if not current_user.is_premium %}
+                <span class="text-danger"><i class="fas fa-heart"></i> Tốn 3 Tim cho bài thi</span>
+                {% else %}
+                <span class="text-success"><i class="fas fa-crown text-warning"></i> Miễn phí (VIP)</span>
+                {% endif %}
+            </small>
+        </div>
+
+        {% else %}
+        <div class="levelup-action-box">
+            <button class="btn-levelup disabled-btn" disabled>
+                <i class="fas fa-lock me-1"></i> CHƯA ĐỦ ĐIỀU KIỆN
+            </button>
+            <small class="text-muted d-block mt-2" style="font-size: 0.74rem;">
+                Cần thêm <strong class="text-primary">{{ pp_threshold - current_user.progress_points }} PP</strong> để
+                mở khóa bài thi
+            </small>
+        </div>
+        {% endif %}
+
+        <div class="sidebar-quick-nav">
+            <a href="{{ url_for('user.profile_page') }}" class="quick-nav-link">
+                <i class="fas fa-id-card text-primary"></i>
+                <span>Hồ sơ cá nhân</span>
+            </a>
+            <a href="{{ url_for('user.history_page') }}" class="quick-nav-link">
+                <i class="fas fa-history text-info"></i>
+                <span>Lịch sử làm bài</span>
+            </a>
+            {% if not current_user.is_premium %}
+            <a href="{{ url_for('user.profile_page') }}" class="quick-nav-link text-warning-emphasis">
+                <i class="fas fa-crown text-warning"></i>
+                <span>Nâng cấp PRO</span>
+            </a>
+            {% endif %}
+        </div>
+
+    </aside>
+
+
+    <div class="dash-main">
+        <div class="skills-grid">
+            <div>
+                <div class="skill-header">
+                    <h5 class="text-primary">
+                        <i class="fas fa-book-open"></i> Luyện Đọc
+                        <span class="badge bg-primary bg-opacity-10 text-primary fw-normal fs-6 ms-1">Reading</span>
+                    </h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
+                        style="font-size: 0.75rem;">
+                        Xem tất cả
+                    </a>
+                </div>
+
+                {% for exercise in readings | sort(attribute='level') %}
+                <div class="exercise-card">
+                    <div class="ex-info">
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary"
+                                style="font-size: 0.68rem;">
+                                Level {{ exercise.level }}
+                            </span>
+                            {% if exercise.level > current_user.current_level and not current_user.is_premium %}
+                            <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary"
+                                style="font-size: 0.68rem;">
+                                <i class="fas fa-lock me-1"></i>Khóa
+                            </span>
+                            {% elif exercise.level > current_user.current_level and current_user.is_premium %}
+                            <span class="badge rounded-pill bg-warning bg-opacity-25 text-dark"
+                                style="font-size: 0.68rem;">
+                                <i class="fas fa-crown me-1 text-warning"></i>Vượt cấp
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="ex-title mt-1">{{ exercise.title }}</div>
+                        <div class="ex-meta">
+                            <span><i class="far fa-clock me-1 text-primary"></i> {{ exercise.time_limit }} phút</span>
+                        </div>
+                    </div>
+
+                    {% if exercise.level > current_user.current_level and not current_user.is_premium %}
+                    <button class="btn btn-sm btn-light text-muted rounded-pill px-3 border" disabled>
+                        <i class="fas fa-lock"></i>
+                    </button>
+                    {% elif exercise.level > current_user.current_level and current_user.is_premium %}
+                    <a href="{{ url_for('exams.reading_exercise_page', exercise_id=exercise.id) }}"
+                        class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark shadow-sm">
+                        <i class="fas fa-crown me-1"></i>Làm bài
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('exams.reading_exercise_page', exercise_id=exercise.id) }}"
+                        class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
+                        Làm bài
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-book-open"></i>
+                    Chưa có bài tập Reading nào.
+                </div>
+                {% endfor %}
+            </div>
+
+            <div>
+                <div class="skill-header">
+                    <h5 class="text-success">
+                        <i class="fas fa-pen-nib"></i> Luyện Viết
+                        <span class="badge bg-success bg-opacity-10 text-success fw-normal fs-6 ms-1">Writing</span>
+                    </h5>
+                    <a href="#" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold"
+                        style="font-size: 0.75rem;">
+                        Xem tất cả
+                    </a>
+                </div>
+
+                {% for topic in writings | sort(attribute='level') %}
+                <div class="exercise-card">
+                    <div class="ex-info">
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success"
+                                style="font-size: 0.68rem;">
+                                Level {{ topic.level }}
+                            </span>
+                            {% if topic.level > current_user.current_level and not current_user.is_premium %}
+                            <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary"
+                                style="font-size: 0.68rem;">
+                                <i class="fas fa-lock me-1"></i>Khóa
+                            </span>
+                            {% elif topic.level > current_user.current_level and current_user.is_premium %}
+                            <span class="badge rounded-pill bg-warning bg-opacity-25 text-dark"
+                                style="font-size: 0.68rem;">
+                                <i class="fas fa-crown me-1 text-warning"></i>Vượt cấp
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="ex-title mt-1">{{ topic.title }}</div>
+                        <div class="ex-meta">
+                            <span><i class="fas fa-align-left me-1 text-success"></i> {{ topic.min_words }}–{{
+                                topic.max_words }} từ</span>
+                        </div>
+                    </div>
+
+                    {% if topic.level > current_user.current_level and not current_user.is_premium %}
+                    <button class="btn btn-sm btn-light text-muted rounded-pill px-3 border" disabled>
+                        <i class="fas fa-lock"></i>
+                    </button>
+                    {% elif topic.level > current_user.current_level and current_user.is_premium %}
+                    <a href="{{ url_for('exams.writing_exercise_page', exercise_id=topic.id) }}"
+                        class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark shadow-sm"
+                        title="Miễn phí Tim (Premium)">
+                        <i class="fas fa-crown me-1"></i>Làm bài
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('exams.writing_exercise_page', exercise_id=topic.id) }}"
+                        class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" title="Tốn 2 Tim">
+                        Viết ngay <i class="fas fa-heart text-danger ms-1"></i>2
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-pen-nib"></i>
+                    Chưa có chủ đề Writing nào.
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

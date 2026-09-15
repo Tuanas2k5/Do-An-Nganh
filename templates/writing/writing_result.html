@@ -14,7 +14,6 @@
 
                 <div class="card-body p-4 p-md-5 bg-white">
                     <div class="row mb-5">
-                        <!-- Cột Trái: Thông số & Biểu đồ -->
                         <div class="col-md-5 mb-4 mb-md-0 d-flex flex-column align-items-center">
                             <div class="text-center mb-4 w-100">
                                 <div class="p-3 border rounded-4 bg-light shadow-sm">
@@ -23,7 +22,6 @@
                                 </div>
                             </div>
 
-                            <!-- Khung chứa Biểu đồ Radar -->
                             <div class="w-100" style="max-width: 300px;">
                                 <canvas id="scoreRadarChart"
                                         data-grammar="{{ submission.grammar_score or 0 }}"
@@ -75,9 +73,15 @@
                         </div>
                     </div>
 
+                    <div class="alert alert-warning border-0 shadow-sm rounded-3 mt-4 text-dark mb-4 text-start">
+                        <i class="fas fa-exclamation-triangle text-warning me-2 fs-5"></i>
+                        <strong>Lưu ý:</strong> Điểm số và lời phê từ AI chỉ mang tính chất tham khảo. Kết quả chính
+                        thức sẽ được Giáo viên trực tiếp xem xét, đánh giá và điều chỉnh lại.
+                    </div>
+
+
                     <hr class="text-muted mb-4">
 
-                    <!-- Bài viết của học sinh -->
                     <div class="mb-4">
                         <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-file-alt me-2"></i>Bài viết của bạn:
                         </h5>

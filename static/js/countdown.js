@@ -1,17 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('timer-container');
     const display = document.getElementById('time-display');
-    const form = document.getElementById('quiz-form');
+    const form = document.getElementById('quiz-form') || document.getElementById('level-up-form');;
 
     if (!container || !display || !form) return;
 
-    const storageKey = 'exam_end_time_' + window.location.pathname;
+    let timeLimitInMinutes = 15;
 
+    if (container && container.hasAttribute('data-time')) {
+        timeLimitInMinutes = parseInt(container.getAttribute('data-time'), 10);
+    } else if (form.id === 'level-up-form') {
+        timeLimitInMinutes = 60;
+    }
+
+   const storageKey = 'exam_end_time_' + window.location.pathname;
     let endTime = localStorage.getItem(storageKey);
     let now = new Date().getTime();
 
     if (!endTime || now > endTime) {
-        let timeLimitInMinutes = parseInt(container.getAttribute('data-time'), 10) || 15;
         endTime = now + timeLimitInMinutes * 60 * 1000;
         localStorage.setItem(storageKey, endTime);
     }

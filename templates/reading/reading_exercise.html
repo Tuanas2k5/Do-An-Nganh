@@ -1,11 +1,9 @@
 {% extends 'layout/base.html' %}
 {% block content %}
 
-<!-- Dùng container-fluid để tận dụng tối đa chiều rộng màn hình cho layout chia đôi -->
 <div class="container-fluid px-4 my-4">
     <div class="row h-100">
 
-        <!-- Cột Trái: Đoạn văn Reading -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-header bg-primary text-white p-3 rounded-top-4 d-flex align-items-center">
@@ -14,16 +12,12 @@
                     <span class="badge bg-light text-primary ms-auto">Level {{ exercise.level }}</span>
                 </div>
 
-                <!-- Áp dụng class scroll-box thay vì style cứng -->
                 <div class="card-body scroll-box" style="background-color: #f8f9fa;">
-                    <div class="fs-5" style="line-height: 1.8; text-align: justify;">
-                        {{ exercise.content | replace('\n\n', '<br><br>') | safe }}
-                    </div>
+                    <div class="fs-5" style="line-height: 1.8; text-align: justify; white-space: pre-wrap;">{{ exercise.content | replace('\n\n', '<br><br>') | safe }}</div>
                 </div>
             </div>
         </div>
 
-        <!-- Cột Phải: Danh sách Câu hỏi trắc nghiệm -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-header bg-success text-white p-3 rounded-top-4 d-flex justify-content-between align-items-center">
@@ -34,7 +28,6 @@
                     </div>
                 </div>
 
-                <!-- Áp dụng class scroll-box -->
                 <div class="card-body bg-light scroll-box">
                     <form id="quiz-form" action="#" method="POST">
 

@@ -52,7 +52,104 @@ def placement_test_page():
             return redirect(url_for('index'))
 
     questions = generate_placement_test()
-    return render_template('placement_test.html', questions=questions)
+    return render_template('student/placement_test.html', questions=questions)
+
+@exams_bp.route('/level-up', methods=['GET', 'POST'])
+@login_required
+def level_up_exam():
+    thresholds = {'A1': 100, 'A2': 150, 'B1': 200, 'B2': 250, 'C1': 300, 'C2': float('inf')}
+    current_threshold = thresholds.get(current_user.current_level, 100)
+
+    if current_user.progress_points < current_threshold:
+        flash('Bạn chưa tích đủ Điểm Tiến độ (PP) để thi lên cấp!', 'warning')
+        return redirect(url_for('index'))
+
+    if not current_user.is_premium and current_user.hearts_count < 3:
+        flash('Bạn cần ít nhất 3 Tim để làm bài thi này. Hãy chờ hồi phục hoặc nâng cấp Premium!', 'danger')
+        return redirect(url_for('index'))
+
+    reading_qs = ReadingQuestion.query.filter_by(level=current_user.current_level, is_placement_test=False).order_by(db.func.random()).limit(10).all()
+    writing_topic = WritingTopic.query.filter_by(level=current_user.current_level).order_by(db.func.random()).first()
+
+    if not reading_qs or not writing_topic:
+        flash('Hệ thống chưa đủ ngân hàng đề thi cho cấp độ này. Vui lòng quay lại sau!', 'info')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        if not current_user.is_premium:
+            current_user.hearts_count = max(0, current_user.hearts_count - 3)
+
+        correct_answers = 0
+        for q in reading_qs:
+            user_ans = request.form.get(f'q_{q.id}')
+            if user_ans == q.correct_answer:
+                correct_answers += 1
+
+        reading_score = correct_answers * 10
+
+        student_essay = request.form.get('student_essay')
+
+        ai_result = grade_writing_with_ai(writing_topic, student_essay)
+        if not ai_result:
+            db.session.commit()
+            flash('Hệ thống chấm điểm AI đang quá tải, vui lòng nộp lại sau!', 'danger')
+            return redirect(request.url)
+
+        writing_score = ai_result.get('total_score', 0)
+
+        final_score = (reading_score * 0.5) + (writing_score * 0.5)
+
+        CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+        current_index = CEFR_ORDER.index(current_user.current_level)
+
+        if final_score >= 70:
+            if current_index < len(CEFR_ORDER) - 1:
+                current_user.current_level = CEFR_ORDER[current_index + 1]
+
+            current_user.progress_points = 0
+            flash(
+                f'XUẤT SẮC! Bạn đạt {final_score}/100 điểm. Chúc mừng bạn đã thăng cấp lên {current_user.current_level}!',
+                'success')
+
+        else:
+            penalty = int(current_threshold * 0.5)
+            current_user.progress_points = max(0, current_user.progress_points - penalty)
+            flash(
+                f'Rất tiếc! Bạn chỉ đạt {final_score}/100 điểm (Yêu cầu: 70). Hệ thống đã trừ {penalty} PP, hãy ôn luyện thêm nhé!',
+                'danger')
+
+        reading_sub = Submission(
+            user_id=current_user.id,
+            skill='level_up_reading',
+            total_score=reading_score
+        )
+        db.session.add(reading_sub)
+
+        writing_sub = Submission(
+            user_id=current_user.id,
+            exercise_id=writing_topic.id,
+            skill='level_up_writing',
+            content_submitted=student_essay,
+            total_score=writing_score,
+            grammar_score=ai_result.get('grammar_score', 0),
+            vocabulary_score=ai_result.get('vocabulary_score', 0),
+            coherence_score=ai_result.get('coherence_score', 0),
+            task_response_score=ai_result.get('task_response_score', 0),
+            ai_feedback=ai_result.get('ai_feedback', '')
+        )
+        db.session.add(writing_sub)
+
+        db.session.commit()
+
+        is_passed = final_score >= 70
+        return render_template('student/level_up_result.html',
+                               final_score=final_score,
+                               reading_score=reading_score,
+                               writing_score=writing_score,
+                               is_passed=is_passed,
+                               penalty=penalty if not is_passed else 0)
+
+    return render_template('student/level_up_test.html', reading_qs=reading_qs, writing_topic=writing_topic)
 
 
 CEFR_LEVELS = {'A1': 1, 'A2': 2, 'B1': 3, 'B2': 4, 'C1': 5, 'C2': 6}
@@ -65,7 +162,7 @@ def reading_exercise_page(exercise_id):
     user_lvl_val = CEFR_LEVELS.get(current_user.current_level, 1)
     exercise_lvl_val = CEFR_LEVELS.get(exercise.level, 1)
 
-    if exercise_lvl_val > user_lvl_val:
+    if exercise_lvl_val > user_lvl_val and not current_user.is_premium:
         flash(f'Bài tập này yêu cầu cấp độ {exercise.level}. Bạn cần nâng cấp độ để tham gia!', 'danger')
         return redirect(url_for('index'))
 
@@ -81,9 +178,9 @@ def reading_exercise_page(exercise_id):
         )
 
         flash('Nộp bài thành công!', 'success')
-        return redirect(url_for('exams.reading_result_page', submission_id=submission_id))
+        return redirect(url_for('exams.reading_result_page', submission_id=submission_id, pp=pp_earned, hearts=hearts_deducted))
 
-    return render_template('reading_exercise.html', exercise=exercise)
+    return render_template('reading/reading_exercise.html', exercise=exercise)
 
 @exams_bp.route('/reading/result/<int:submission_id>')
 @login_required
@@ -95,8 +192,11 @@ def reading_result_page(submission_id):
         return redirect(url_for('index'))
 
     exercise = ReadingExercise.query.get(submission.exercise_id)
+    pp_earned = request.args.get('pp', 0)
+    hearts_deducted = request.args.get('hearts', 0)
 
-    return render_template('reading_result.html', submission=submission, exercise=exercise)
+    return render_template('reading/reading_result.html', submission=submission, exercise=exercise, pp_earned=pp_earned,
+                           hearts_deducted=hearts_deducted)
 
 
 @exams_bp.before_app_request
@@ -125,7 +225,6 @@ def auto_recover_hearts():
 def api_explain_reading(submission_id):
     submission = Submission.query.get_or_404(submission_id)
 
-    # Bảo mật: Chỉ chủ nhân bài làm mới được xem giải thích
     if submission.user_id != current_user.id:
         return jsonify({"status": "error", "message": "Unauthorized"}), 403
 
@@ -147,7 +246,7 @@ def writing_exercise_page(exercise_id):
     user_lvl_val = CEFR_LEVELS.get(current_user.current_level, 1)
     exercise_lvl_val = CEFR_LEVELS.get(exercise.level, 1)
 
-    if exercise_lvl_val > user_lvl_val:
+    if exercise_lvl_val > user_lvl_val and not current_user.is_premium:
         flash(f'Bài tập này yêu cầu cấp độ {exercise.level}. Bạn cần nâng cấp độ để tham gia!', 'danger')
         return redirect(url_for('index'))
 
@@ -191,7 +290,7 @@ def writing_exercise_page(exercise_id):
         flash('Nộp bài và chấm điểm thành công!', 'success')
         return redirect(url_for('exams.writing_result_page', submission_id=new_submission.id))
 
-    return render_template('writing_exercise.html', exercise=exercise)
+    return render_template('writing/writing_exercise.html', exercise=exercise)
 
 
 @exams_bp.route('/writing/result/<int:submission_id>')
@@ -205,4 +304,4 @@ def writing_result_page(submission_id):
 
     topic = WritingTopic.query.get(submission.exercise_id)
 
-    return render_template('writing_result.html', submission=submission, topic=topic)
+    return render_template('writing/writing_result.html', submission=submission, topic=topic)

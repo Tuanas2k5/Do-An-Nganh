@@ -1,0 +1,58 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-success text-white p-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-pen-nib me-2"></i>Tạo Đề Writing Mới</h4>
+                    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-sm btn-light text-success fw-bold">Trở về</a>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form action="{{ url_for('teacher.create_writing') }}" method="POST">
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tiêu đề (Chủ đề bài viết) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" name="title" placeholder="VD: The impact of technology on education" required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cấp độ <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-lg" name="level" required>
+                                    <option value="" disabled selected>-- Chọn --</option>
+                                    <option value="A1">A1</option><option value="A2">A2</option>
+                                    <option value="B1">B1</option><option value="B2">B2</option>
+                                    <option value="C1">C1</option><option value="C2">C2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Từ tối thiểu <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control form-control-lg" name="min_words" value="150" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Từ tối đa <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control form-control-lg" name="max_words" value="250" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mô tả & Yêu cầu chi tiết <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="description" rows="6" placeholder="Nhập câu hỏi chi tiết, các gợi ý dàn ý cho học sinh..." required></textarea>
+                        </div>
+
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold rounded-pill">
+                                <i class="fas fa-paper-plane me-2"></i>Phát Hành Đề Thi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

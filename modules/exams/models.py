@@ -10,6 +10,11 @@ class ReadingExercise(db.Model):
     level = db.Column(db.String(2), nullable=False)
     time_limit = db.Column(db.Integer, default=15)
 
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.String(20), default='draft')
+    is_active = db.Column(db.Boolean, default=True)
+    version = db.Column(db.Integer, default=1)
+
     questions = db.relationship('ReadingQuestion', backref='exercise', lazy=True)
 
 
@@ -48,6 +53,11 @@ class WritingTopic(db.Model):
     level = db.Column(db.String(2), nullable=False)
     min_words = db.Column(db.Integer, nullable=False, default=150)
     max_words = db.Column(db.Integer, nullable=False, default=250)
+
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.String(20), default='published')
+    is_active = db.Column(db.Boolean, default=True)
+    version = db.Column(db.Integer, default=1)
 
 
 class Submission(db.Model):

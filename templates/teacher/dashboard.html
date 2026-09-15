@@ -1,0 +1,237 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container-fluid px-4 my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-chalkboard-teacher me-2"></i>Tổng quan Quản lý Bài tập</h2>
+    </div>
+
+    <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold fs-6 text-primary" id="reading-tab" data-bs-toggle="tab"
+                    data-bs-target="#reading" type="button" role="tab" aria-controls="reading" aria-selected="true">
+                <i class="fas fa-book-open me-2"></i>Reading (Đọc hiểu)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold fs-6 text-success" id="writing-tab" data-bs-toggle="tab"
+                    data-bs-target="#writing" type="button" role="tab" aria-controls="writing" aria-selected="false">
+                <i class="fas fa-pen-nib me-2"></i>Writing (Viết luận)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold fs-6 text-info" id="students-tab" data-bs-toggle="tab"
+                    data-bs-target="#students" type="button" role="tab" aria-controls="students" aria-selected="false">
+                <i class="fas fa-user-graduate me-2"></i>Tiến độ Học sinh
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="dashboardTabsContent">
+
+        <div class="tab-pane fade show active" id="reading" role="tabpanel" aria-labelledby="reading-tab">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{{ url_for('teacher.create_reading') }}" class="btn btn-primary fw-bold shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Tạo Đề Reading
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">ID</th>
+                            <th class="py-3">Tiêu đề / Cấp độ</th>
+                            <th class="py-3">Trạng thái</th>
+                            <th class="py-3">Số câu hỏi</th>
+                            <th class="text-end px-4 py-3">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for exercise in readings %}
+                        <tr>
+                            <td class="px-4 fw-bold text-muted">#{{ exercise.id }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ exercise.title }}</div>
+                                <span class="badge bg-info mt-1">Level {{ exercise.level }}</span>
+                                <span class="badge bg-secondary mt-1"><i class="far fa-clock me-1"></i>{{ exercise.time_limit }}p</span>
+                            </td>
+                            <td>
+                                {% if exercise.status == 'published' %}
+                                <span class="badge bg-success"><i class="fas fa-globe me-1"></i>Đã phát hành</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark"><i class="fas fa-edit me-1"></i>Bản nháp</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="fw-bold">{{ exercise.questions|length }}</span>/5 câu
+                            </td>
+                            <td class="text-end px-4">
+                                <a href="{{ url_for('teacher.edit_reading', exercise_id=exercise.id) }}"
+                                   class="btn btn-sm btn-outline-success" title="Sửa thông tin">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="{{ url_for('teacher.manage_reading_questions', exercise_id=exercise.id) }}"
+                                   class="btn btn-sm btn-outline-primary ms-1" title="Quản lý câu hỏi">
+                                    <i class="fas fa-list-ol"></i>
+                                </a>
+                                <form action="{{ url_for('teacher.delete_reading', exercise_id=exercise.id) }}"
+                                      method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Xóa"
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa bài tập Reading này không?');">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-open display-4 mb-3 d-block"></i>
+                                Bạn chưa tạo bài tập Reading nào.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="writing" role="tabpanel" aria-labelledby="writing-tab">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{{ url_for('teacher.create_writing') }}" class="btn btn-primary fw-bold shadow-sm">
+                    <i class="fas fa-plus me-2"></i>Tạo Đề Writing
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 border-top border-success border-4">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">ID</th>
+                            <th class="py-3">Chủ đề (Title)</th>
+                            <th class="py-3">Cấp độ</th>
+                            <th class="py-3">Giới hạn từ</th>
+                            <th class="text-end px-4 py-3">Thao tác</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for writing in writings %}
+                        <tr>
+                            <td class="px-4 fw-bold text-muted">#{{ writing.id }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ writing.title }}</div>
+                                <div class="text-muted small mt-1 text-truncate" style="max-width: 300px;">{{
+                                    writing.description }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">Level {{ writing.level }}</span>
+                            </td>
+                            <td>
+                                <span class="badge border border-success text-success bg-white">{{ writing.min_words }} - {{ writing.max_words }} words</span>
+                            </td>
+                            <td class="text-end px-4">
+                                <a href="{{ url_for('teacher.view_writing_submissions', writing_id=writing.id) }}"
+                                   class="btn btn-sm btn-outline-primary" title="Xem & Chấm bài học sinh">
+                                    <i class="fas fa-check-double me-1"></i>Chấm bài
+                                </a>
+
+                                <a href="{{ url_for('teacher.edit_writing', writing_id=writing.id) }}"
+                                   class="btn btn-sm btn-outline-success" title="Sửa đề">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+
+                                <form action="{{ url_for('teacher.delete_writing', writing_id=writing.id) }}"
+                                      method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Xóa"
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa bài tập Writing này không?');">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-open display-4 mb-3 d-block"></i>
+                                Bạn chưa tạo bài tập Writing nào.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="students" role="tabpanel" aria-labelledby="students-tab">
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                <h5 class="fw-bold text-dark mb-0">Bảng Xếp Hạng Tiến Độ</h5>
+            </div>
+            <div class="card border-0 shadow-sm rounded-4 border-top border-info border-4">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">ID</th>
+                            <th class="py-3">Thông tin Học sinh</th>
+                            <th class="py-3">Cấp độ CEFR</th>
+                            <th class="py-3">Điểm Tiến độ (PP)</th>
+                            <th class="py-3 text-end px-4">Gói dịch vụ</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td class="px-4 fw-bold text-muted">#{{ student.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ student.avatar if student.avatar else url_for('static', filename='img/default_avatar.png') }}"
+                                         class="rounded-circle me-3 object-fit-cover shadow-sm border"
+                                         style="width: 45px; height: 45px;">
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ student.last_name }} {{ student.first_name
+                                            }}
+                                        </div>
+                                        <div class="text-muted small">{{ student.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary fs-6">{{ student.current_level }}</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-success fs-5">{{ student.progress_points }} <span
+                                        class="fs-6 text-muted">PP</span></div>
+                            </td>
+                            <td class="text-end px-4">
+                                {% if student.is_premium %}
+                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i
+                                        class="fas fa-crown me-1"></i>PRO</span>
+                                {% else %}
+                                <span class="badge bg-secondary px-3 py-2 rounded-pill">FREE</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-users display-4 mb-3 d-block opacity-50"></i>
+                                Hệ thống hiện chưa có học sinh nào đăng ký.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

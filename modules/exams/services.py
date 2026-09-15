@@ -33,6 +33,19 @@ def calculate_placement_level(score_percentage):
     else:
         return 'C2'
 
+def update_progress_points(user, skill, score):
+    earned_pp = 0
+    if skill == 'reading':
+        earned_pp += 5
+        if score >= 80:
+            earned_pp += 5
+    elif skill == 'writing':
+        earned_pp += 10
+        if score >= 80:
+            earned_pp += 10
+    user.progress_points += earned_pp
+    db.session.commit()
+    return earned_pp
 
 def grade_reading_submission(user, exercise_id, form_data):
     exercise = ReadingExercise.query.get(exercise_id)
@@ -40,7 +53,14 @@ def grade_reading_submission(user, exercise_id, form_data):
     total_questions = len(questions)
 
     if total_questions == 0:
-        return 0, 0, 0, 0
+        return 0, 0, 0, 0, 0
+
+    previous_submission = Submission.query.filter_by(
+        user_id=user.id,
+        exercise_id=exercise_id,
+        skill='reading'
+    ).first()
+    is_redo = (previous_submission is not None)
 
     new_submission = Submission(
         user_id=user.id,
@@ -79,17 +99,21 @@ def grade_reading_submission(user, exercise_id, form_data):
     if final_score >= 80: pp_earned += 5
     user.progress_points += pp_earned
 
+    pp_earned = update_progress_points(user, 'reading', final_score)
+
     hearts_deducted = 0
     if not user.is_premium:
-        hearts_deducted = wrong_count
-        user.hearts_count = max(0, user.hearts_count - hearts_deducted)
+        if is_redo and final_score == 100:
+            user.hearts_count = min(5, user.hearts_count + 1)
+        else:
+            hearts_deducted = wrong_count
+            user.hearts_count = max(0, user.hearts_count - hearts_deducted)
 
     db.session.commit()
     return new_submission.id, final_score, wrong_count, pp_earned, hearts_deducted
 
 
 def get_reading_explanation_from_ai(submission_id):
-    """Gọi Gemini API để lấy giải thích cho bài Reading"""
     submission = Submission.query.get(submission_id)
     if not submission:
         return "Không tìm thấy bài nộp."
@@ -105,7 +129,6 @@ def get_reading_explanation_from_ai(submission_id):
         """
 
     for i, q in enumerate(questions, 1):
-        # --- ĐOẠN MỚI: Truy vấn xem học sinh đã chọn đáp án nào ---
         chi_tiet = StudentReadingAnswer.query.filter_by(
             submission_id=submission_id,
             question_id=q.id

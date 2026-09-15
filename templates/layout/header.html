@@ -1,11 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-3 shadow-sm">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/">
-            <span class="brand-logo fw-bold fs-4">TeachEng</span>
+            <span class="brand-logo fw-bold fs-4">LearnEng</span>
         </a>
 
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbar"
-            aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -15,13 +15,16 @@
                 {# Sử dụng biến current_user của Flask-Login để kiểm tra trạng thái #}
                 {% if current_user.is_authenticated %}
 
-
                 <li class="nav-item">
-                    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm" style="cursor: help;" title="Số tim còn lại để làm bài">
-                        <i class="fas fa-heart me-1"></i> {{ current_user.hearts_count }}
+                    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm" style="cursor: help;"
+                          title="Số tim còn lại để làm bài">
+                            {% if current_user.is_premium %}
+                            <i class="fas fa-infinity fs-4"></i> Vô hạn
+                            {% else %}
+                            <i class="fas fa-heart me-1"></i> {{ current_user.hearts_count }}
+                            {% endif %}
                     </span>
                 </li>
-
 
                 {% if current_user.is_premium %}
                 <li class="nav-item">
@@ -31,28 +34,82 @@
                 </li>
                 {% endif %}
 
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user-circle fs-4 me-2 text-primary"></i>
-                        <span class="fw-semibold">Chào, {{ current_user.last_name }}</span>
+                <li class="nav-item dropdown me-2">
+                    <a class="nav-link text-white position-relative d-flex align-items-center" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell fs-5 {% if unread_count and unread_count > 0 %}bell-shake text-warning{% endif %}"></i>
+                        {% if unread_count and unread_count > 0 %}
+                        <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger border border-light notif-badge-pulse" style="font-size: 0.65em;">
+                            {{ unread_count }}
+                        </span>
+                        {% endif %}
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end border-0 mt-2" aria-labelledby="notificationDropdown" style="width: 330px; max-height: 420px; overflow-y: auto;">
+                        <li class="px-2 py-1"><h6 class="dropdown-header fw-bold text-dark fs-6 px-1">Thông báo mới</h6></li>
+
+                        {% for notif in recent_notifications %}
+                        <li class="mb-1">
+                            <a class="dropdown-item notif-item py-2 px-2 text-wrap {% if not notif.is_read %}bg-light{% endif %}" href="{{ notif.link }}">
+                                <div class="d-flex align-items-start">
+                                    <div class="bg-primary text-white rounded-circle p-2 me-2 shadow-sm flex-shrink-0" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-bell" style="font-size: 0.75rem;"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="mb-1 fw-bold text-dark" style="font-size: 0.85rem; line-height: 1.3;">{{ notif.title }}</p>
+                                        <small class="text-muted d-block" style="font-size: 0.72rem;">{{ notif.message }} - {{ notif.created_at.strftime('%H:%M %d/%m') }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li><span class="dropdown-item py-3 text-muted text-center">Không có thông báo nào.</span></li>
+                        {% endfor %}
+
+                        <li><hr class="dropdown-divider my-2"></li>
+                        <li><a class="dropdown-item text-center text-primary fw-bold py-2 justify-content-center" href="#" style="font-size: 0.85rem;">Đánh dấu đã đọc tất cả</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" id="userDropdown"
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                        <img src="{{ current_user.avatar if current_user.avatar else url_for('static', filename='img/default_avatar.png') }}"
+                             alt="Avatar"
+                             class="rounded-circle object-fit-cover me-2 border border-2 border-primary bg-white shadow-sm user-avatar-header"
+                             style="width: 35px; height: 35px;">
+
+                        <span class="fw-semibold">Chào, {{ current_user.last_name if current_user.last_name else current_user.username }}</span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end border-0 mt-2" aria-labelledby="userDropdown" style="min-width: 210px;">
+                        <li class="px-2 py-1 border-bottom mb-1 pb-2">
+                            <small class="text-muted d-block" style="font-size: 0.72rem;">Tài khoản đăng nhập</small>
+                            <span class="fw-bold text-dark d-block text-truncate" style="font-size: 0.9rem;">
+                                {% if current_user.last_name or current_user.first_name %}
+                                    {{ current_user.last_name }} {{ current_user.first_name }}
+                                {% else %}
+                                    {{ current_user.username }}
+                                {% endif %}
+                            </span>
+                            <small class="text-primary fw-semibold" style="font-size: 0.75rem;">Level {{ current_user.current_level }}</small>
+                        </li>
                         <li>
-                            <a class="dropdown-item py-2" href="{{ url_for('user.profile_page') }}">
-                                <i class="fas fa-id-card me-2 text-muted"></i>Trang cá nhân
+                            <a class="dropdown-item" href="{{ url_for('user.profile_page') }}">
+                                <i class="fas fa-id-card me-2 text-primary" style="width: 18px;"></i>Trang cá nhân
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="#">
-                                <i class="fas fa-chart-line me-2 text-muted"></i>Tiến độ học tập
+                            <a class="dropdown-item" href="{{ url_for('user.history_page') }}">
+                                <i class="fas fa-history me-2 text-info" style="width: 18px;"></i>Lịch sử làm bài
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item py-2 text-danger fw-medium" href="{{ url_for('user.logout') }}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                            <hr class="dropdown-divider my-2">
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger fw-medium" href="{{ url_for('user.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2" style="width: 18px;"></i>Đăng xuất
                             </a>
                         </li>
                     </ul>
@@ -64,7 +121,23 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-bold transition-hover" href="{{ url_for('user.register_page') }}">Đăng ký ngay</a>
+                    <a class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-bold transition-hover"
+                       href="{{ url_for('user.register_page') }}">Đăng ký ngay</a>
+                </li>
+                {% endif %}
+
+                {% if current_user.is_authenticated and current_user.role.value in ['teacher'] %}
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-primary" href="{{ url_for('teacher.dashboard') }}">
+                        <i class="fas fa-chalkboard-teacher me-1"></i>Khu Vực Giáo Viên
+                    </a>
+                </li>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.role.value in ['admin'] %}
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-primary" href="{{ url_for('admin.dashboard') }}">
+                        <i class="fas fa-chalkboard-teacher me-1"></i>Khu Vực Quản trị viên
+                    </a>
                 </li>
                 {% endif %}
             </ul>

@@ -6,7 +6,6 @@
         <div class="col-lg-8">
 
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
-                <!-- Header màu tùy theo điểm số (Có thể tối ưu bằng Jinja sau) -->
                 <div class="card-header bg-success text-white text-center py-4">
                     <h2 class="fw-bold">Hoàn Thành Bài Tập!</h2>
                     <p class="mb-0 fs-5">{{ exercise.title }}</p>
@@ -14,33 +13,32 @@
 
                 <div class="card-body p-5 bg-white">
                     <div class="row text-center mb-4">
-                        <!-- Điểm số -->
                         <div class="col-md-4 mb-3">
                             <div class="p-3 border rounded-4 bg-light h-100">
                                 <h6 class="text-muted text-uppercase fw-bold mb-2">Điểm Số</h6>
                                 <h2 class="text-success fw-bold mb-0">{{ submission.total_score }}/100</h2>
                             </div>
                         </div>
-                        <!-- Điểm PP Nhận được -->
+
                         <div class="col-md-4 mb-3">
                             <div class="p-3 border rounded-4 bg-light h-100">
                                 <h6 class="text-muted text-uppercase fw-bold mb-2">Tiến Độ (PP)</h6>
-                                <h2 class="text-primary fw-bold mb-0"><i class="fas fa-star text-warning me-1"></i>+
-                                    Nhận</h2>
+                                <h2 class="text-primary fw-bold mb-0"><i class="fas fa-star text-warning me-1"></i>+ {{
+                                    pp_earned }} PP</h2>
                             </div>
                         </div>
-                        <!-- Năng lượng bị trừ -->
+
                         <div class="col-md-4 mb-3">
                             <div class="p-3 border rounded-4 bg-light h-100">
                                 <h6 class="text-muted text-uppercase fw-bold mb-2">Năng Lượng</h6>
-                                <h2 class="text-danger fw-bold mb-0"><i class="fas fa-heart me-1"></i>- Trừ</h2>
+                                <h2 class="text-danger fw-bold mb-0"><i class="fas fa-heart me-1"></i>- {{
+                                    hearts_deducted }} Tim</h2>
                             </div>
                         </div>
                     </div>
 
                     <hr class="text-muted mb-4">
 
-                    <!-- Nút Kêu gọi hành động -->
                     <div class="d-grid gap-3 d-md-flex justify-content-md-center">
                         <a href="{{ url_for('index') }}"
                            class="btn btn-outline-secondary btn-lg px-4 rounded-pill fw-bold">
@@ -56,13 +54,12 @@
                 </div>
             </div>
 
-            <!-- Khu vực hiển thị kết quả AI (Tạm ẩn) -->
             <div id="ai-feedback-container" class="card border-0 shadow-sm rounded-4 d-none">
                 <div class="card-header bg-primary text-white p-3 rounded-top-4">
                     <h5 class="mb-0 fw-bold"><i class="fas fa-magic me-2"></i>Trợ Giảng Ảo Nhận Xét</h5>
                 </div>
                 <div class="card-body bg-light" id="ai-feedback-content">
-                    <!-- Nội dung Gemini trả về sẽ nằm ở đây -->
+                    <!-- Nội dung Gemini trả về -->
                 </div>
             </div>
 

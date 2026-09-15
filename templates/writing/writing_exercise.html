@@ -20,7 +20,6 @@
                     <div class="alert alert-info border-0 shadow-sm rounded-3">
                         <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>Yêu cầu:</h6>
                         <ul class="mb-0">
-                            <!-- Thay 150 bằng biến Jinja -->
                             <li>Số từ tối thiểu: <strong id="min-words" class="text-danger">{{ exercise.min_words }}</strong> từ.</li>
                             <li>Tập trung vào ngữ pháp và tính mạch lạc.</li>
                             <li>AI sẽ trừ 1 Tim nếu bài viết dưới điểm chuẩn.</li>
@@ -35,7 +34,6 @@
                 <div class="card-header bg-dark text-white p-3 rounded-top-4 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold"><i class="fas fa-keyboard me-2"></i>Khu vực làm bài</h5>
 
-                    <!-- Thêm data-min-words vào đây và đổi số hiển thị -->
                     <div class="badge bg-secondary fs-6 px-3 py-2 shadow-sm" id="word-count-badge" data-min-words="{{ exercise.min_words }}">
                         <i class="fas fa-font me-1"></i> <span id="word-count">0</span> / {{ exercise.min_words }} từ
                     </div>

@@ -1,0 +1,281 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="container-fluid px-4 my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <h2 class="fw-bold text-dark"><i class="fas fa-user-shield text-primary me-2"></i>Bảng Điều Khiển Quản Trị Viên
+        </h2>
+        <span class="badge bg-danger fs-6 px-3 py-2 rounded-pill shadow-sm"><i class="fas fa-lock me-1"></i>Khu Vực Tuyệt Mật</span>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 bg-primary text-white shadow-sm h-100 rounded-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase fw-bold opacity-75 mb-1">Tổng Học Sinh</h6>
+                        <h2 class="fw-bold mb-0">{{ total_students | default('0') }}</h2>
+                    </div>
+                    <i class="fas fa-user-graduate fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 bg-success text-white shadow-sm h-100 rounded-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase fw-bold opacity-75 mb-1">Tổng Giáo Viên</h6>
+                        <h2 class="fw-bold mb-0">{{ total_teachers | default('0') }}</h2>
+                    </div>
+                    <i class="fas fa-chalkboard-teacher fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 bg-warning text-dark shadow-sm h-100 rounded-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase fw-bold opacity-75 mb-1">Tài khoản PREMIUM</h6>
+                        <h2 class="fw-bold mb-0">{{ total_premium | default('0') }}</h2>
+                    </div>
+                    <i class="fas fa-crown fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-0 bg-danger text-white shadow-sm h-100 rounded-4">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase fw-bold opacity-75 mb-1">Doanh thu dự kiến</h6>
+                        <h2 class="fw-bold mb-0">{{ total_revenue | default('0') }}đ</h2>
+                    </div>
+                    <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="fw-bold mb-3"><i class="fas fa-cogs text-secondary me-2"></i>Nghiệp Vụ Hệ Thống</h4>
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100 rounded-4 hover-lift">
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <div class="mb-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 70px; height: 70px;">
+                            <i class="fas fa-user-plus fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Tạo Tài Khoản Giáo Viên</h5>
+                    <p class="text-muted small flex-grow-1">Học sinh tự đăng ký công khai, nhưng chỉ Quản trị viên mới
+                        có quyền tạo và cấp phát tài khoản Giáo viên[cite: 11].</p>
+                    <button class="btn btn-primary rounded-pill fw-bold px-4" data-bs-toggle="modal"
+                            data-bs-target="#createTeacherModal">
+                        <i class="fas fa-plus me-1"></i> Cấp Tài Khoản
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100 rounded-4 hover-lift">
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <div class="mb-3">
+                        <div class="bg-warning bg-opacity-25 text-warning rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 70px; height: 70px;">
+                            <i class="fas fa-gift fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Tặng Gói PREMIUM</h5>
+                    <p class="text-muted small flex-grow-1">Đặc quyền cấp phát gói PREMIUM hoàn toàn miễn phí cho Học
+                        sinh nhằm mục đích tạo tài khoản demo hoặc trao học bổng[cite: 11].</p>
+                    <button class="btn btn-warning text-dark rounded-pill fw-bold px-4" data-bs-toggle="modal"
+                            data-bs-target="#giftPremiumModal">
+                        <i class="fas fa-crown me-1"></i> Tặng PREMIUM
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100 rounded-4 hover-lift">
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    <div class="mb-3">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 70px; height: 70px;">
+                            <i class="fas fa-level-up-alt fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Can Thiệp Cấp Độ</h5>
+                    <p class="text-muted small flex-grow-1">Thực hiện các chỉnh sửa ngoại lệ đối với cấp độ của Học sinh
+                        (chỉnh sửa trực tiếp không qua thi Level-up) khi có sai sót[cite: 11].</p>
+                    <button class="btn btn-danger rounded-pill fw-bold px-4" data-bs-toggle="modal"
+                            data-bs-target="#updateLevelModal">
+                        <i class="fas fa-tools me-1"></i> Điều Chỉnh Level
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createTeacherModal" tabindex="-1" aria-labelledby="createTeacherModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="createTeacherModalLabel"><i class="fas fa-user-plus me-2"></i>Tạo
+                    Tài Khoản Giáo Viên</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+
+            <form action="{{ url_for('admin.create_teacher') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-dark">Họ</label>
+                            <input type="text" name="last_name" class="form-control bg-light" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-dark">Tên</label>
+                            <input type="text" name="first_name" class="form-control bg-light" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Địa chỉ Email</label>
+                        <input type="email" name="email" class="form-control bg-light" required>
+                        <small class="text-danger fw-medium">* Mỗi tài khoản phải có email duy nhất[cite: 11].</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Số điện thoại</label>
+                        <input type="text" name="phone" class="form-control bg-light" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark">Mật khẩu khởi tạo</label>
+                        <input type="password" name="password" class="form-control bg-light" required>
+                        <small class="text-muted d-block mt-1">Yêu cầu: Tối thiểu 8 ký tự, 1 chữ hoa, 1 chữ số, 1 ký tự
+                            đặc biệt[cite: 11].</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light rounded-bottom-4 border-0 pb-4 pe-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold"
+                            data-bs-dismiss="modal">Hủy bỏ
+                    </button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-check me-2"></i>Cấp Tài Khoản
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="giftPremiumModal" tabindex="-1" aria-labelledby="giftPremiumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+
+            <div class="modal-header bg-warning text-dark rounded-top-4">
+                <h5 class="modal-title fw-bold" id="giftPremiumModalLabel"><i class="fas fa-gift me-2"></i>Tặng Gói
+                    PREMIUM Miễn Phí</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="{{ url_for('admin.gift_premium') }}" method="POST">
+                <div class="modal-body p-4">
+                    <p class="text-muted mb-4">Nhập email của Học sinh để hệ thống kích hoạt đặc quyền <strong>Tim vô
+                        hạn</strong> và <strong>Giải thích AI</strong> trong vòng 30 ngày[cite: 10].</p>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Email Học sinh nhận</label>
+                        <input type="email" name="student_email" class="form-control form-control-lg bg-light"
+                               placeholder="ví dụ: hocsinh@learneng.com" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light rounded-bottom-4 border-0 pb-4 pe-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold"
+                            data-bs-dismiss="modal">Hủy
+                    </button>
+                    <button type="submit" class="btn btn-warning text-dark rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-magic me-2"></i>Kích Hoạt Ngay
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateLevelModal" tabindex="-1" aria-labelledby="updateLevelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+
+            <div class="modal-header bg-danger text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="updateLevelModalLabel"><i class="fas fa-level-up-alt me-2"></i>Can Thiệp Cấp Độ Học Sinh</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="{{ url_for('admin.update_level') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Email Học sinh</label>
+                        <input type="email" name="student_email" class="form-control bg-light" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark">Cấp độ CEFR mới</label>
+                        <select name="new_level" class="form-select bg-light" required>
+                            <option value="A1">A1 - Beginner</option>
+                            <option value="A2">A2 - Elementary</option>
+                            <option value="B1">B1 - Intermediate</option>
+                            <option value="B2">B2 - Upper Intermediate</option>
+                            <option value="C1">C1 - Advanced</option>
+                            <option value="C2">C2 - Proficient</option>
+                        </select>
+                    </div>
+
+                    <div class="form-check form-switch mt-4">
+                        <input class="form-check-input" type="checkbox" role="switch" id="resetPP" name="reset_pp" value="yes" checked>
+                        <label class="form-check-label fw-medium text-dark" for="resetPP">Khôi phục Điểm tiến độ (PP) về 0</label>
+                    </div>
+                    <small class="text-muted d-block mt-2">Lưu ý: Thao tác này sẽ thay đổi vĩnh viễn lộ trình học của tài khoản[cite: 10].</small>
+                </div>
+
+                <div class="modal-footer bg-light rounded-bottom-4 border-0 pb-4 pe-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Áp Dụng
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-4 mb-4">
+    <div class="card border-0 shadow-sm h-100 rounded-4 hover-lift">
+        <div class="card-body p-4 text-center d-flex flex-column">
+            <div class="mb-3">
+                <div class="bg-dark bg-opacity-10 text-dark rounded-circle d-inline-flex align-items-center justify-content-center"
+                     style="width: 70px; height: 70px;">
+                    <i class="fas fa-database fa-2x"></i>
+                </div>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">Database Manager</h5>
+            <p class="text-muted small flex-grow-1">Công cụ Flask-Admin hỗ trợ thao tác trực tiếp (Thêm/Sửa/Xóa) lên toàn bộ cơ sở dữ liệu hệ thống.</p>
+            <a href="/db-admin" class="btn btn-dark rounded-pill fw-bold px-4">
+                <i class="fas fa-external-link-alt me-1"></i> Truy Cập
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
