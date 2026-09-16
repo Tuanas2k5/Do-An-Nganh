@@ -69,4 +69,8 @@ def create_app(config_override=None):
 
     jwt = JWTManager(app)
 
+    # Tự động tạo bảng khi app khởi động (an toàn, chỉ tạo nếu chưa có)
+    with app.app_context():
+        db.create_all()
+
     return app
